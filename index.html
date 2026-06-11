@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Wellness Diary</title>
+<meta name="description" content="Join my real yoga, nutrition and wellness journey — live classes, free videos, and personalised diet plans.">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --forest:#1a3d2e;--sage:#7db898;--sand:#f5efe6;--terracotta:#c4714a;
+  --cream:#faf8f5;--dark:#0f2419;--muted:#5a7a66;--light-sage:#e8f5ee;--border:#d4e8da;
+}
+body{font-family:'Inter',sans-serif;background:var(--cream);color:var(--forest);overflow-x:hidden}
+h1,h2,h3,.serif{font-family:'Playfair Display',serif}
+
+/* NAV */
+nav{position:fixed;top:0;width:100%;background:rgba(250,248,245,0.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);z-index:1000;padding:0 2rem}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--forest);font-weight:600;text-decoration:none}
+.logo span{color:var(--terracotta)}
+.nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
+.nav-links a{text-decoration:none;color:var(--muted);font-size:0.875rem;font-weight:500;transition:color 0.2s}
+.nav-links a:hover{color:var(--forest)}
+.nav-cta{background:var(--forest)!important;color:var(--cream)!important;padding:8px 20px;border-radius:100px;font-size:0.8rem!important}
+.nav-cta:hover{background:var(--dark)!important}
+.admin-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:6px 14px;border-radius:100px;font-size:0.75rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+.admin-btn:hover{border-color:var(--forest);color:var(--forest)}
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:4px}
+.hamburger span{display:block;width:22px;height:2px;background:var(--forest);margin:5px 0;transition:all 0.3s}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:7rem 2rem 5rem;background:linear-gradient(160deg,var(--cream) 0%,var(--light-sage) 60%,var(--sand) 100%);position:relative;overflow:hidden}
+.leaf-bg{position:absolute;opacity:0.05;font-size:22rem;top:-5rem;right:-7rem;pointer-events:none;animation:float 8s ease-in-out infinite}
+.leaf-bg2{position:absolute;opacity:0.04;font-size:15rem;bottom:-3rem;left:-5rem;pointer-events:none;animation:float 10s ease-in-out infinite reverse}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-20px) rotate(5deg)}}
+.hero-badge{display:inline-block;background:var(--light-sage);color:var(--muted);border:1px solid var(--border);padding:6px 18px;border-radius:100px;font-size:0.75rem;font-weight:500;margin-bottom:1.5rem;letter-spacing:0.05em}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4.2rem);line-height:1.15;color:var(--forest);margin-bottom:1.5rem;font-weight:400}
+.hero h1 em{color:var(--terracotta);font-style:italic}
+.hero-sub{font-size:1.05rem;color:var(--muted);max-width:500px;margin:0 auto 2.5rem;line-height:1.75;font-weight:300}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--forest);color:var(--cream);padding:14px 32px;border-radius:100px;border:none;font-size:0.9rem;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-primary:hover{background:var(--dark);transform:translateY(-1px)}
+.btn-outline{background:transparent;color:var(--forest);padding:14px 32px;border-radius:100px;border:1.5px solid var(--forest);font-size:0.9rem;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;text-decoration:none;display:inline-block}
+.btn-outline:hover{background:var(--forest);color:var(--cream)}
+.hero-stats{display:flex;gap:3rem;justify-content:center;margin-top:4rem;padding-top:3rem;border-top:1px solid var(--border);flex-wrap:wrap}
+.stat-num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--forest);display:block}
+.stat-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em}
+
+/* SECTIONS */
+section{padding:6rem 2rem}
+.section-inner{max-width:1200px;margin:0 auto}
+.section-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.12em;color:var(--terracotta);font-weight:600;margin-bottom:0.75rem}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,3vw,2.6rem);color:var(--forest);margin-bottom:1rem;font-weight:400}
+.section-sub{color:var(--muted);font-weight:300;font-size:1rem;line-height:1.7;max-width:500px}
+
+/* WAVE */
+.wave{width:100%;line-height:0;overflow:hidden;display:block}
+.wave svg{display:block;width:100%}
+
+/* VIDEOS */
+#videos{background:var(--sand)}
+.playlist-tabs{display:flex;gap:0.5rem;margin:2rem 0 0;flex-wrap:wrap}
+.tab-btn{padding:9px 22px;border-radius:100px;border:1.5px solid var(--border);background:transparent;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.tab-btn.active,.tab-btn:hover{background:var(--forest);color:var(--cream);border-color:var(--forest)}
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.5rem;margin-top:2rem}
+.video-card{background:var(--cream);border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform 0.2s,box-shadow 0.2s;cursor:pointer}
+.video-card:hover{transform:translateY(-4px);box-shadow:0 8px 24px rgba(26,61,46,0.1)}
+.video-thumb{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.play-btn{width:48px;height:48px;background:rgba(250,248,245,0.92);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.play-icon{width:0;height:0;border-style:solid;border-width:9px 0 9px 18px;border-color:transparent transparent transparent var(--forest);margin-left:3px}
+.platform-badge{position:absolute;top:10px;right:10px;padding:3px 9px;border-radius:100px;font-size:0.65rem;font-weight:700;letter-spacing:0.04em}
+.yt-badge{background:#ff0000;color:#fff}
+.ig-badge{background:#c13584;color:#fff}
+.thumb-emoji{font-size:2.8rem;opacity:0.35;position:absolute}
+.video-info{padding:1rem}
+.video-title{font-weight:600;font-size:0.88rem;color:var(--forest);margin-bottom:0.3rem;line-height:1.4}
+.video-meta{font-size:0.74rem;color:var(--muted)}
+.empty-state{grid-column:1/-1;text-align:center;padding:3rem;color:var(--muted);font-size:0.9rem}
+
+/* CLASSES */
+#classes{background:var(--forest);color:var(--cream)}
+#classes .section-label{color:var(--sage)}
+#classes .section-title{color:var(--cream)}
+#classes .section-sub{color:rgba(250,248,245,0.65)}
+.class-header-row{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.btn-outline-sage{background:transparent;color:var(--sage);padding:12px 28px;border-radius:100px;border:1.5px solid var(--sage);font-size:0.85rem;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+.btn-outline-sage:hover{background:var(--sage);color:var(--forest)}
+.class-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem;margin-top:2.5rem}
+.class-card{background:rgba(255,255,255,0.06);border:1px solid rgba(125,184,152,0.2);border-radius:16px;padding:1.5rem;transition:all 0.2s}
+.class-card:hover{background:rgba(255,255,255,0.1);border-color:rgba(125,184,152,0.5)}
+.class-type-badge{display:inline-block;padding:3px 10px;background:rgba(196,113,74,0.2);color:#e8a082;border-radius:100px;font-size:0.68rem;font-weight:600;margin-bottom:0.75rem;letter-spacing:0.04em}
+.class-day{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--sage);margin-bottom:0.4rem;font-weight:600}
+.class-name{font-family:'Playfair Display',serif;font-size:1.15rem;margin-bottom:0.5rem;color:var(--cream)}
+.class-time{font-size:0.82rem;color:rgba(250,248,245,0.55);margin-bottom:1.5rem}
+.subscribe-class-btn{width:100%;padding:10px;background:transparent;border:1.5px solid var(--sage);color:var(--sage);border-radius:100px;font-family:'Inter',sans-serif;font-size:0.82rem;font-weight:500;cursor:pointer;transition:all 0.2s}
+.subscribe-class-btn:hover{background:var(--sage);color:var(--forest)}
+
+/* DIET */
+#diet{background:var(--cream)}
+.diet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.5rem;margin-top:2.5rem}
+.diet-card{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all 0.2s;display:flex;flex-direction:column}
+.diet-card:hover{border-color:var(--sage);box-shadow:0 6px 24px rgba(26,61,46,0.08)}
+.diet-header{padding:1.5rem;border-bottom:1px solid var(--border)}
+.diet-emoji{font-size:2rem;margin-bottom:0.75rem;display:block}
+.diet-name{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--forest);margin-bottom:0.3rem}
+.diet-desc{font-size:0.78rem;color:var(--muted);line-height:1.55}
+.diet-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
+.diet-price{font-family:'Playfair Display',serif;font-size:1.9rem;color:var(--forest);margin-bottom:1rem}
+.diet-price span{font-family:'Inter',sans-serif;font-size:0.82rem;color:var(--muted);font-weight:400}
+.diet-features{list-style:none;margin-bottom:1.5rem;flex:1}
+.diet-features li{font-size:0.78rem;color:var(--muted);padding:5px 0;display:flex;gap:8px;align-items:flex-start;border-bottom:1px solid var(--border)}
+.diet-features li:last-child{border-bottom:none}
+.diet-features li::before{content:'✓';color:var(--sage);font-weight:700;flex-shrink:0;margin-top:1px}
+.btn-diet{width:100%;padding:12px;background:var(--forest);color:var(--cream);border:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:0.85rem;font-weight:500;cursor:pointer;transition:all 0.2s;margin-top:auto}
+.btn-diet:hover{background:var(--dark)}
+
+/* SUBSCRIBE */
+#subscribe{background:var(--light-sage);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.subscribe-box{max-width:580px;margin:0 auto;text-align:center}
+.email-form{display:flex;gap:0.75rem;margin-top:2rem;flex-wrap:wrap}
+.email-input{flex:1;min-width:200px;padding:13px 20px;border:1.5px solid var(--border);border-radius:100px;font-family:'Inter',sans-serif;font-size:0.875rem;background:var(--cream);color:var(--forest);outline:none;transition:border 0.2s}
+.email-input:focus{border-color:var(--sage)}
+.email-input::placeholder{color:var(--muted)}
+
+/* ABOUT */
+#about{background:var(--sand)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.about-img{width:100%;aspect-ratio:4/5;background:var(--light-sage);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:7rem;position:relative}
+.about-accent{position:absolute;bottom:-1rem;right:-1rem;width:110px;height:110px;background:var(--terracotta);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+.about-content p{color:var(--muted);line-height:1.8;margin-bottom:1rem;font-weight:300;font-size:0.95rem}
+.journey-tags{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1.5rem}
+.journey-tag{padding:6px 14px;background:var(--cream);border:1px solid var(--border);border-radius:100px;font-size:0.73rem;color:var(--forest);font-weight:500}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,36,25,0.72);z-index:2000;align-items:center;justify-content:center;padding:1rem;overflow-y:auto}
+.modal-overlay.open{display:flex}
+.modal{background:var(--cream);border-radius:20px;padding:2rem;max-width:460px;width:100%;position:relative;margin:auto}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.6rem;cursor:pointer;color:var(--muted);line-height:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{color:var(--forest)}
+.modal-title{font-family:'Playfair Display',serif;font-size:1.35rem;color:var(--forest);margin-bottom:0.4rem}
+.modal-sub{font-size:0.82rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.5}
+.form-group{margin-bottom:0.9rem}
+.form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--forest);margin-bottom:0.35rem}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--forest);background:#fff;outline:none;transition:border 0.2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--sage)}
+.form-group textarea{resize:vertical;min-height:75px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.modal-footer{display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+.btn-cancel{flex:1;padding:11px;background:transparent;border:1.5px solid var(--border);border-radius:100px;font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--muted);cursor:pointer;transition:all 0.2s}
+.btn-cancel:hover{border-color:var(--muted)}
+.btn-submit{flex:2;padding:11px;background:var(--forest);border:none;border-radius:100px;font-family:'Inter',sans-serif;font-size:0.85rem;color:var(--cream);cursor:pointer;font-weight:500;transition:all 0.2s}
+.btn-submit:hover{background:var(--dark)}
+.btn-submit:disabled{opacity:0.6;cursor:not-allowed}
+.success-msg{text-align:center;padding:2rem 1rem}
+.success-icon{font-size:3rem;margin-bottom:1rem;display:block}
+.success-title{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--forest);margin-bottom:0.5rem}
+.success-sub{font-size:0.83rem;color:var(--muted);line-height:1.6}
+
+/* ADMIN */
+.admin-overlay{display:none;position:fixed;inset:0;background:rgba(15,36,25,0.88);z-index:3000;overflow-y:auto;padding:1rem}
+.admin-overlay.open{display:block}
+.admin-panel{background:var(--cream);border-radius:20px;max-width:820px;margin:2rem auto;overflow:hidden}
+.admin-header{background:var(--forest);color:var(--cream);padding:1.25rem 1.75rem;display:flex;align-items:center;justify-content:space-between}
+.admin-header h2{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:400}
+.admin-header-right{display:flex;gap:0.75rem;align-items:center}
+.admin-close{background:none;border:none;color:rgba(250,248,245,0.7);font-size:1.5rem;cursor:pointer;transition:color 0.2s}
+.admin-close:hover{color:var(--cream)}
+.admin-logout{background:none;border:1px solid rgba(250,248,245,0.3);color:rgba(250,248,245,0.7);padding:5px 12px;border-radius:100px;font-size:0.72rem;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s}
+.admin-logout:hover{border-color:var(--cream);color:var(--cream)}
+.admin-login-box{padding:2.5rem 2rem}
+.admin-login-box h3{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:0.5rem}
+.admin-login-box p{font-size:0.82rem;color:var(--muted);margin-bottom:1.5rem}
+.admin-tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto}
+.admin-tab{padding:0.9rem 1.3rem;border:none;background:transparent;font-family:'Inter',sans-serif;font-size:0.82rem;cursor:pointer;color:var(--muted);font-weight:500;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all 0.2s}
+.admin-tab.active{color:var(--forest);border-bottom-color:var(--forest)}
+.admin-content{padding:1.5rem}
+.admin-section{display:none}
+.admin-section.active{display:block}
+.admin-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem}
+.admin-card-list{display:flex;flex-direction:column;gap:0.6rem;margin-top:1rem;max-height:260px;overflow-y:auto}
+.admin-item{background:#fff;border:1px solid var(--border);border-radius:10px;padding:0.85rem 1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.admin-item-title{font-weight:600;font-size:0.82rem;color:var(--forest)}
+.admin-item-meta{font-size:0.72rem;color:var(--muted);margin-top:2px}
+.admin-actions{display:flex;gap:0.4rem;flex-shrink:0}
+.btn-sm{padding:5px 12px;border-radius:100px;font-family:'Inter',sans-serif;font-size:0.72rem;cursor:pointer;font-weight:500;border:none;transition:all 0.2s}
+.btn-delete{background:#fff0ec;color:#c4714a}
+.btn-delete:hover{background:var(--terracotta);color:#fff}
+.btn-add{background:var(--forest);color:var(--cream);padding:10px 22px;border-radius:100px;font-family:'Inter',sans-serif;font-size:0.8rem;cursor:pointer;border:none;font-weight:500;margin-top:1rem;transition:all 0.2s}
+.btn-add:hover{background:var(--dark)}
+.btn-add:disabled{opacity:0.6;cursor:not-allowed}
+.admin-divider{margin:1.5rem 0 1rem;font-size:0.82rem;font-weight:600;color:var(--forest);padding-bottom:0.5rem;border-bottom:1px solid var(--border)}
+.sub-table{width:100%;border-collapse:collapse;font-size:0.78rem}
+.sub-table th{text-align:left;padding:8px 10px;background:var(--light-sage);color:var(--forest);font-weight:600;font-size:0.72rem}
+.sub-table td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--muted)}
+.sub-table tr:hover td{background:#fafff8}
+
+/* FOOTER */
+footer{background:var(--dark);color:var(--cream);padding:3rem 2rem 2rem}
+.footer-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem}
+.footer-logo{font-family:'Playfair Display',serif;font-size:1.1rem;display:block;margin-bottom:0.75rem;color:var(--cream)}
+.footer-logo span{color:var(--terracotta)}
+.footer-desc{font-size:0.78rem;color:rgba(250,248,245,0.45);line-height:1.7;font-weight:300}
+.footer-heading{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--sage);margin-bottom:1rem;font-weight:600}
+.footer-links{list-style:none}
+.footer-links li{margin-bottom:0.5rem}
+.footer-links a{font-size:0.78rem;color:rgba(250,248,245,0.45);text-decoration:none;transition:color 0.2s}
+.footer-links a:hover{color:var(--cream)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.07);margin-top:2rem;padding-top:1.25rem;text-align:center;font-size:0.72rem;color:rgba(250,248,245,0.25)}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--forest);color:var(--cream);padding:0.85rem 1.5rem;border-radius:100px;font-size:0.85rem;z-index:5000;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast.error{background:#8b1a1a}
+
+/* LOADING */
+.loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .about-grid{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr 1fr}
+  .admin-form-grid{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .nav-links{display:none}
+  .hamburger{display:block}
+  .footer-inner{grid-template-columns:1fr}
+  .hero-stats{gap:1.5rem}
+  .form-row{grid-template-columns:1fr}
+  section{padding:4rem 1.25rem}
+}
+.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:var(--cream);border-bottom:1px solid var(--border);padding:1rem 2rem;z-index:999;flex-direction:column;gap:1rem}
+.mobile-menu.open{display:flex}
+.mobile-menu a{text-decoration:none;color:var(--forest);font-size:0.9rem;font-weight:500;padding:0.5rem 0;border-bottom:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">Our Wellness <span>Diary</span></a>
+    <ul class="nav-links">
+      <li><a href="#videos">Videos</a></li>
+      <li><a href="#classes">Live Classes</a></li>
+      <li><a href="#diet">Diet Plans</a></li>
+      <li><a href="#about">My Journey</a></li>
+      <li><a href="#subscribe" class="nav-cta">Subscribe</a></li>
+    </ul>
+    <div style="display:flex;gap:0.75rem;align-items:center">
+      <button class="admin-btn" onclick="openAdmin()">Admin ⚙</button>
+      <button class="hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#videos" onclick="toggleMobileMenu()">Videos</a>
+  <a href="#classes" onclick="toggleMobileMenu()">Live Classes</a>
+  <a href="#diet" onclick="toggleMobileMenu()">Diet Plans</a>
+  <a href="#about" onclick="toggleMobileMenu()">My Journey</a>
+  <a href="#subscribe" onclick="toggleMobileMenu()">Subscribe</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="leaf-bg" aria-hidden="true">🌿</div>
+  <div class="leaf-bg2" aria-hidden="true">🍃</div>
+  <div style="position:relative;z-index:1;max-width:700px">
+    <div class="hero-badge">🌱 Learning Yoga · Nutrition · Wellness — Together</div>
+    <h1>Your daily dose of <em>wellness,</em> one honest step at a time.</h1>
+    <p class="hero-sub">Join me on my real journey from beginner to certified yoga instructor. No perfection — just progress, shared openly.</p>
+    <div class="hero-actions">
+      <a href="#classes" class="btn-primary">Join Live Classes</a>
+      <a href="#videos" class="btn-outline">Watch Free Videos</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><span class="stat-num" id="subCount">—</span><span class="stat-label">Community Members</span></div>
+      <div class="stat-item"><span class="stat-num" id="vidCount">—</span><span class="stat-label">Free Videos</span></div>
+      <div class="stat-item"><span class="stat-num" id="classCount">—</span><span class="stat-label">Live Classes / Week</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<section id="videos">
+  <div class="section-inner">
+    <div class="section-label">Free Content</div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h2 class="section-title">Video Library</h2>
+        <p class="section-sub">Mini vlogs and full sessions from my learning journey — all free, all honest.</p>
+      </div>
+    </div>
+    <div class="playlist-tabs" id="playlistTabs"></div>
+    <div class="video-grid" id="videoGrid"></div>
+  </div>
+</section>
+
+<div class="wave"><svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#1a3d2e"/></svg></div>
+
+<!-- LIVE CLASSES -->
+<section id="classes">
+  <div class="section-inner">
+    <div class="section-label">Weekly Schedule</div>
+    <div class="class-header-row">
+      <div>
+        <h2 class="section-title">Live Classes</h2>
+        <p class="section-sub">Real-time practice with a small, caring community. Beginners always welcome.</p>
+      </div>
+      <button class="btn-outline-sage" onclick="openSubscribeModal('All Live Classes')">Subscribe to All Classes</button>
+    </div>
+    <div class="class-cards" id="classCards"></div>
+  </div>
+</section>
+
+<div class="wave" style="transform:rotate(180deg) scaleX(-1)"><svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#1a3d2e"/></svg></div>
+
+<!-- DIET PLANS -->
+<section id="diet">
+  <div class="section-inner">
+    <div class="section-label">Nutrition</div>
+    <h2 class="section-title">Diet Plans</h2>
+    <p class="section-sub">Evidence-based plans built around real Indian households. Share your details and I'll tailor it for you.</p>
+    <div class="diet-grid" id="dietGrid"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div style="position:relative">
+        <div class="about-img">🧘‍♀️
+          <div class="about-accent">🌱</div>
+        </div>
+      </div>
+      <div class="about-content">
+        <div class="section-label">My Story</div>
+        <h2 class="section-title">Learning alongside you, not ahead of you.</h2>
+        <p>I started Our Wellness Diary because I couldn't find a space that felt real. Every wellness account seemed polished, expert, and quietly intimidating.</p>
+        <p>So I decided to document everything — the wobbles, the discoveries, the diet experiments, the days I skipped practice. This channel is a diary, not a highlight reel.</p>
+        <p>My long-term goal is to become a certified yoga instructor and wellness coach. You're watching that journey happen in real time.</p>
+        <div class="journey-tags">
+          <span class="journey-tag">Phase 1: Foundation</span>
+          <span class="journey-tag">Yoga Basics</span>
+          <span class="journey-tag">Nutrition Learning</span>
+          <span class="journey-tag">Content Creation</span>
+          <span class="journey-tag">Beginner-Friendly</span>
+          <span class="journey-tag">Authentic Journey</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBSCRIBE -->
+<section id="subscribe">
+  <div class="section-inner">
+    <div class="subscribe-box">
+      <div class="section-label">Stay Connected</div>
+      <h2 class="section-title">Never miss an update</h2>
+      <p class="section-sub" style="margin:0 auto">New videos, class schedules, and wellness tips — straight to your inbox. No spam, ever.</p>
+      <div class="email-form">
+        <input class="email-input" type="email" placeholder="your@email.com" id="newsletterEmail">
+        <button class="btn-primary" onclick="subscribeNewsletter(this)">Subscribe Free</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <span class="footer-logo">Our Wellness <span>Diary</span></span>
+      <p class="footer-desc">A real, unfiltered journey into yoga, nutrition, and wellness. Learning together, growing together.</p>
+    </div>
+    <div>
+      <div class="footer-heading">Explore</div>
+      <ul class="footer-links">
+        <li><a href="#videos">Free Videos</a></li>
+        <li><a href="#classes">Live Classes</a></li>
+        <li><a href="#diet">Diet Plans</a></li>
+        <li><a href="#about">My Journey</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-heading">Connect</div>
+      <ul class="footer-links">
+        <li><a href="https://instagram.com/ourwellnessdiary" target="_blank">Instagram</a></li>
+        <li><a href="https://youtube.com/@ourwellnessdiary" target="_blank">YouTube</a></li>
+        <li><a href="#subscribe">Newsletter</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2025 Our Wellness Diary · All rights reserved · Made with 🌿</div>
+</footer>
+
+<!-- SUBSCRIBE MODAL -->
+<div class="modal-overlay" id="subscribeModal" onclick="handleOverlayClick(event,'subscribeModal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('subscribeModal')">×</button>
+    <div id="subscribeFormWrap">
+      <h3 class="modal-title" id="modalTitle">Subscribe to Live Classes</h3>
+      <p class="modal-sub">Fill in your details — I'll reach out with class links and schedules.</p>
+      <div class="form-group"><label>Full Name *</label><input type="text" placeholder="Your name" id="subName"></div>
+      <div class="form-group"><label>Email Address *</label><input type="email" placeholder="your@email.com" id="subEmail"></div>
+      <div class="form-group"><label>Phone (optional)</label><input type="tel" placeholder="+91 XXXXX XXXXX" id="subPhone"></div>
+      <div class="form-group"><label>Your goal</label>
+        <select id="subGoal">
+          <option>Lose weight</option><option>Build flexibility</option>
+          <option>Stress relief</option><option>General wellness</option><option>Just curious!</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('subscribeModal')">Cancel</button>
+        <button class="btn-submit" id="subSubmitBtn" onclick="submitSubscription(this)">Subscribe →</button>
+      </div>
+    </div>
+    <div class="success-msg" id="subscribeSuccess" style="display:none">
+      <span class="success-icon">🌸</span>
+      <h3 class="success-title">You're on the list!</h3>
+      <p class="success-sub">I'll reach out with class details soon. Welcome to the community 🌿</p>
+    </div>
+  </div>
+</div>
+
+<!-- DIET MODAL -->
+<div class="modal-overlay" id="dietModal" onclick="handleOverlayClick(event,'dietModal')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('dietModal')">×</button>
+    <div id="dietFormWrap">
+      <h3 class="modal-title" id="dietModalTitle">Get Your Diet Plan</h3>
+      <p class="modal-sub">Share your details so I can personalise this plan for you. I'll send it within 2–3 days.</p>
+      <div class="form-row">
+        <div class="form-group"><label>Name *</label><input type="text" placeholder="Your name" id="dietName"></div>
+        <div class="form-group"><label>Age</label><input type="number" placeholder="25" id="dietAge" min="10" max="99"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Weight (kg)</label><input type="number" placeholder="60" id="dietWeight"></div>
+        <div class="form-group"><label>Height (cm)</label><input type="number" placeholder="165" id="dietHeight"></div>
+      </div>
+      <div class="form-group"><label>Health goal</label>
+        <select id="dietGoal"><option>Weight loss</option><option>Muscle gain</option><option>Maintain weight</option><option>Energy & vitality</option><option>Hormonal balance</option></select>
+      </div>
+      <div class="form-group"><label>Dietary preference</label>
+        <select id="dietType"><option>Vegetarian</option><option>Vegan</option><option>Non-vegetarian</option><option>Eggetarian</option></select>
+      </div>
+      <div class="form-group"><label>Any health conditions or allergies?</label>
+        <textarea placeholder="e.g. PCOS, lactose intolerance, diabetes — or leave blank" id="dietConditions"></textarea>
+      </div>
+      <div class="form-group"><label>Email for delivery *</label><input type="email" placeholder="your@email.com" id="dietEmail"></div>
+      <div class="modal-footer">
+        <button class="btn-cancel" onclick="closeModal('dietModal')">Cancel</button>
+        <button class="btn-submit" id="dietSubmitBtn" onclick="submitDiet(this)">Request Plan →</button>
+      </div>
+    </div>
+    <div class="success-msg" id="dietSuccess" style="display:none">
+      <span class="success-icon">🥗</span>
+      <h3 class="success-title">Request received!</h3>
+      <p class="success-sub">I'll review your details and send your personalised plan within 2–3 days. Check your inbox!</p>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN OVERLAY -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <h2>Admin — Our Wellness Diary</h2>
+      <div class="admin-header-right">
+        <button class="admin-logout" id="logoutBtn" style="display:none" onclick="adminLogout()">Log out</button>
+        <button class="admin-close" onclick="closeAdmin()">×</button>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div class="admin-login-box" id="adminLoginBox">
+      <h3>Admin Login</h3>
+      <p>Sign in with your admin email and password to manage content.</p>
+      <div class="form-group"><label>Email</label><input type="email" id="adminEmail" placeholder="admin@yourwellnessdiary.com"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="adminPassword" placeholder="Your password" onkeydown="if(event.key==='Enter')adminLogin(this)"></div>
+      <button class="btn-add" onclick="adminLogin(this)">Sign In</button>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:1rem">First time? Create your admin account in Supabase Authentication → Users → Add User</p>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="adminDashboard" style="display:none">
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('videos',this)">📹 Videos</button>
+        <button class="admin-tab" onclick="switchAdminTab('classes',this)">🧘 Classes</button>
+        <button class="admin-tab" onclick="switchAdminTab('diet',this)">🥗 Diet Plans</button>
+        <button class="admin-tab" onclick="switchAdminTab('subscribers',this)">👥 Subscribers</button>
+      </div>
+      <div class="admin-content">
+
+        <!-- ADMIN VIDEOS -->
+        <div class="admin-section active" id="admin-videos">
+          <div class="admin-divider">Add New Video</div>
+          <div class="admin-form-grid">
+            <div class="form-group"><label>Title</label><input type="text" placeholder="Video title" id="newVidTitle"></div>
+            <div class="form-group"><label>Playlist</label>
+              <select id="newVidPlaylist"><option>Yoga</option><option>Nutrition</option><option>Live Classes</option><option>Vlogs</option></select>
+            </div>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group"><label>Platform</label>
+              <select id="newVidPlatform"><option>YouTube</option><option>Instagram</option></select>
+            </div>
+            <div class="form-group"><label>Duration</label><input type="text" placeholder="12:45" id="newVidDur"></div>
+          </div>
+          <div class="form-group"><label>Video URL</label><input type="url" placeholder="https://youtube.com/watch?v=..." id="newVidUrl"></div>
+          <button class="btn-add" onclick="addVideo(this)">+ Add Video</button>
+          <div class="admin-divider" style="margin-top:1.5rem">Current Videos</div>
+          <div class="admin-card-list" id="adminVideoList"></div>
+        </div>
+
+        <!-- ADMIN CLASSES -->
+        <div class="admin-section" id="admin-classes">
+          <div class="admin-divider">Add New Class</div>
+          <div class="admin-form-grid">
+            <div class="form-group"><label>Class Name</label><input type="text" placeholder="Morning Flow" id="newClassName"></div>
+            <div class="form-group"><label>Day</label>
+              <select id="newClassDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select>
+            </div>
+          </div>
+          <div class="admin-form-grid">
+            <div class="form-group"><label>Time</label><input type="text" placeholder="7:00 AM IST" id="newClassTime"></div>
+            <div class="form-group"><label>Type</label>
+              <select id="newClassType"><option>Yoga</option><option>Nutrition Talk</option><option>Fitness</option><option>Q&A</option></select>
+            </div>
+          </div>
+          <button class="btn-add" onclick="addClass(this)">+ Add Class</button>
+          <div class="admin-card-list" id="adminClassList" style="margin-top:1rem"></div>
+        </div>
+
+        <!-- ADMIN DIET -->
+        <div class="admin-section" id="admin-diet">
+          <div class="admin-divider">Add Diet Plan</div>
+          <div class="admin-form-grid">
+            <div class="form-group"><label>Plan Name</label><input type="text" placeholder="Weight Loss Starter" id="newDietName"></div>
+            <div class="form-group"><label>Price (₹)</label><input type="number" placeholder="799" id="newDietPrice"></div>
+          </div>
+          <div class="form-group"><label>Short Description</label><input type="text" placeholder="A 4-week plan for..." id="newDietDesc"></div>
+          <div class="form-group"><label>Features (comma separated)</label>
+            <textarea placeholder="7-day meal plan, Shopping list, Macro breakdown..." id="newDietFeatures"></textarea>
+          </div>
+          <button class="btn-add" onclick="addDietPlan(this)">+ Add Plan</button>
+          <div class="admin-card-list" id="adminDietList" style="margin-top:1rem"></div>
+        </div>
+
+        <!-- ADMIN SUBSCRIBERS -->
+        <div class="admin-section" id="admin-subscribers">
+          <div class="admin-divider">Class Subscribers & Newsletter</div>
+          <div style="overflow-x:auto">
+            <table class="sub-table" id="subTable">
+              <thead><tr><th>Name</th><th>Email</th><th>Type</th><th>Goal</th><th>Date</th></tr></thead>
+              <tbody id="subTableBody"></tbody>
+            </table>
+          </div>
+          <div class="admin-divider" style="margin-top:1.5rem">Diet Plan Requests</div>
+          <div style="overflow-x:auto">
+            <table class="sub-table" id="dietReqTable">
+              <thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Goal</th><th>Date</th></tr></thead>
+              <tbody id="dietReqTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================
+// SUPABASE CONFIG
+// ============================================
+const SUPABASE_URL = 'https://ahxndmfqnpxrtuvgejjc.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoeG5kbWZxbnB4cnR1dmdlampjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExNDEwMjIsImV4cCI6MjA5NjcxNzAyMn0.2I2PV5ezSnndof4mlKpQLay4Keb4ik40-sdcLkj70jU';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ============================================
+// STATE
+// ============================================
+let allVideos = [];
+let allClasses = [];
+let allDietPlans = [];
+let currentPlaylist = 'All';
+let currentDietPlanId = null;
+let currentDietPlanName = '';
+let isAdmin = false;
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type==='error' ? ' error' : '');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ============================================
+// NAV
+// ============================================
+function toggleMobileMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+
+// ============================================
+// LOAD & RENDER VIDEOS
+// ============================================
+async function loadVideos() {
+  const { data, error } = await db.from('videos').select('*').order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
+  allVideos = data || [];
+  document.getElementById('vidCount').textContent = allVideos.length + '+';
+  renderPlaylistTabs();
+  renderVideos();
+}
+
+function renderPlaylistTabs() {
+  const playlists = ['All', ...new Set(allVideos.map(v => v.playlist))];
+  document.getElementById('playlistTabs').innerHTML = playlists.map(p =>
+    `<button class="tab-btn ${p===currentPlaylist?'active':''}" onclick="setPlaylist('${p}')">${p}</button>`
+  ).join('');
+}
+
+function setPlaylist(p) {
+  currentPlaylist = p;
+  renderPlaylistTabs();
+  renderVideos();
+}
+
+const thumbColors = { Yoga:'#e8f5ee', Nutrition:'#fdf6e8', Vlogs:'#f0eaf8', 'Live Classes':'#e8eef5' };
+
+function renderVideos() {
+  const filtered = currentPlaylist === 'All' ? allVideos : allVideos.filter(v => v.playlist === currentPlaylist);
+  const grid = document.getElementById('videoGrid');
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state">No videos in this playlist yet. Check back soon! 🌿</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(v => `
+    <div class="video-card" onclick="${v.url ? `window.open('${v.url}','_blank')` : ''}">
+      <div class="video-thumb" style="background:${thumbColors[v.playlist]||'#e8f5ee'}">
+        <span class="thumb-emoji">${v.emoji||'🎥'}</span>
+        <div class="play-btn"><div class="play-icon"></div></div>
+        <div class="platform-badge ${v.platform==='YouTube'?'yt-badge':'ig-badge'}">${v.platform==='YouTube'?'YT':'IG'}</div>
+      </div>
+      <div class="video-info">
+        <div class="video-title">${v.title}</div>
+        <div class="video-meta">${v.playlist} · ${v.duration||'—'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// LOAD & RENDER CLASSES
+// ============================================
+async function loadClasses() {
+  const { data, error } = await db.from('classes').select('*').order('created_at');
+  if (error) { console.error(error); return; }
+  allClasses = data || [];
+  document.getElementById('classCount').textContent = allClasses.length;
+  renderClasses();
+}
+
+function renderClasses() {
+  const container = document.getElementById('classCards');
+  if (!allClasses.length) {
+    container.innerHTML = '<p style="color:rgba(250,248,245,0.5);font-size:0.9rem">No classes scheduled yet.</p>';
+    return;
+  }
+  container.innerHTML = allClasses.map(c => `
+    <div class="class-card">
+      <div class="class-type-badge">${c.type}</div>
+      <div class="class-day">${c.day}</div>
+      <div class="class-name">${c.name}</div>
+      <div class="class-time">⏰ ${c.time}</div>
+      <button class="subscribe-class-btn" onclick="openSubscribeModal('${c.name.replace(/'/g,"\\'")}')">Subscribe to This Class</button>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// LOAD & RENDER DIET PLANS
+// ============================================
+async function loadDietPlans() {
+  const { data, error } = await db.from('diet_plans').select('*').order('created_at');
+  if (error) { console.error(error); return; }
+  allDietPlans = data || [];
+  renderDietPlans();
+}
+
+function renderDietPlans() {
+  const grid = document.getElementById('dietGrid');
+  if (!allDietPlans.length) {
+    grid.innerHTML = '<p style="color:var(--muted);font-size:0.9rem">Diet plans coming soon!</p>';
+    return;
+  }
+  grid.innerHTML = allDietPlans.map(d => `
+    <div class="diet-card">
+      <div class="diet-header">
+        <span class="diet-emoji">${d.emoji||'🌿'}</span>
+        <div class="diet-name">${d.name}</div>
+        <div class="diet-desc">${d.description||''}</div>
+      </div>
+      <div class="diet-body">
+        <div class="diet-price">₹${d.price}<span> / plan</span></div>
+        <ul class="diet-features">${(d.features||'').split(',').map(f=>`<li>${f.trim()}</li>`).join('')}</ul>
+        <button class="btn-diet" onclick="openDietModal('${d.id}','${d.name.replace(/'/g,"\\'")}')">Get This Plan</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================
+// HERO STATS
+// ============================================
+async function loadStats() {
+  const { count } = await db.from('subscribers').select('*', { count: 'exact', head: true });
+  document.getElementById('subCount').textContent = (count || 0) + '+';
+}
+
+// ============================================
+// MODALS
+// ============================================
+function openSubscribeModal(className) {
+  document.getElementById('modalTitle').textContent = className === 'All Live Classes' ? 'Subscribe to All Live Classes' : `Subscribe: ${className}`;
+  document.getElementById('subscribeFormWrap').style.display = 'block';
+  document.getElementById('subscribeSuccess').style.display = 'none';
+  document.getElementById('subName').value = '';
+  document.getElementById('subEmail').value = '';
+  document.getElementById('subPhone').value = '';
+  document.getElementById('subscribeModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function openDietModal(planId, planName) {
+  currentDietPlanId = planId;
+  currentDietPlanName = planName;
+  document.getElementById('dietModalTitle').textContent = `Get: ${planName}`;
+  document.getElementById('dietFormWrap').style.display = 'block';
+  document.getElementById('dietSuccess').style.display = 'none';
+  ['dietName','dietAge','dietWeight','dietHeight','dietEmail','dietConditions'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('dietModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e, id) {
+  if (e.target === e.currentTarget) closeModal(id);
+}
+
+// ============================================
+// SUBSCRIBE FORM
+// ============================================
+async function submitSubscription(btn) {
+  const name = document.getElementById('subName').value.trim();
+  const email = document.getElementById('subEmail').value.trim();
+  if (!name || !email) { showToast('Please fill name and email', 'error'); return; }
+  if (!/\S+@\S+\.\S+/.test(email)) { showToast('Please enter a valid email', 'error'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> Subscribing...';
+
+  const { error } = await db.from('subscribers').insert({
+    name, email,
+    phone: document.getElementById('subPhone').value || null,
+    goal: document.getElementById('subGoal').value,
+    type: 'class'
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Subscribe →';
+
+  if (error) {
+    showToast('Something went wrong. Please try again.', 'error');
+    console.error(error);
+    return;
+  }
+
+  document.getElementById('subscribeFormWrap').style.display = 'none';
+  document.getElementById('subscribeSuccess').style.display = 'block';
+  loadStats();
+}
+
+// ============================================
+// NEWSLETTER
+// ============================================
+async function subscribeNewsletter(btn) {
+  const email = document.getElementById('newsletterEmail').value.trim();
+  if (!email || !/\S+@\S+\.\S+/.test(email)) { showToast('Please enter a valid email', 'error'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span>';
+
+  const { error } = await db.from('subscribers').insert({ name: 'Newsletter', email, type: 'newsletter' });
+
+  btn.disabled = false;
+  btn.textContent = 'Subscribe Free';
+
+  if (error && error.code === '23505') { showToast('You\'re already subscribed! 🌿'); return; }
+  if (error) { showToast('Something went wrong. Please try again.', 'error'); return; }
+
+  document.getElementById('newsletterEmail').value = '';
+  showToast('🌿 Welcome to the community!');
+  loadStats();
+}
+
+// ============================================
+// DIET FORM
+// ============================================
+async function submitDiet(btn) {
+  const name = document.getElementById('dietName').value.trim();
+  const email = document.getElementById('dietEmail').value.trim();
+  if (!name || !email) { showToast('Please fill name and email', 'error'); return; }
+  if (!/\S+@\S+\.\S+/.test(email)) { showToast('Please enter a valid email', 'error'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> Sending...';
+
+  const { error } = await db.from('diet_requests').insert({
+    name, email,
+    age: document.getElementById('dietAge').value || null,
+    weight: document.getElementById('dietWeight').value || null,
+    height: document.getElementById('dietHeight').value || null,
+    goal: document.getElementById('dietGoal').value,
+    diet_type: document.getElementById('dietType').value,
+    conditions: document.getElementById('dietConditions').value || null,
+    plan_name: currentDietPlanName
+  });
+
+  btn.disabled = false;
+  btn.textContent = 'Request Plan →';
+
+  if (error) { showToast('Something went wrong. Please try again.', 'error'); console.error(error); return; }
+
+  document.getElementById('dietFormWrap').style.display = 'none';
+  document.getElementById('dietSuccess').style.display = 'block';
+}
+
+// ============================================
+// ADMIN AUTH
+// ============================================
+function openAdmin() {
+  document.getElementById('adminOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  checkAdminSession();
+}
+
+function closeAdmin() {
+  document.getElementById('adminOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('adminOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAdmin();
+});
+
+async function checkAdminSession() {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    showAdminDashboard();
+  } else {
+    document.getElementById('adminLoginBox').style.display = 'block';
+    document.getElementById('adminDashboard').style.display = 'none';
+    document.getElementById('logoutBtn').style.display = 'none';
+  }
+}
+
+async function adminLogin(btn) {
+  const email = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  if (!email || !password) { showToast('Please enter email and password', 'error'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> Signing in...';
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+  btn.disabled = false;
+  btn.textContent = 'Sign In';
+
+  if (error) { showToast('Login failed: ' + error.message, 'error'); return; }
+  showAdminDashboard();
+}
+
+async function adminLogout() {
+  await db.auth.signOut();
+  document.getElementById('adminLoginBox').style.display = 'block';
+  document.getElementById('adminDashboard').style.display = 'none';
+  document.getElementById('logoutBtn').style.display = 'none';
+  document.getElementById('adminEmail').value = '';
+  document.getElementById('adminPassword').value = '';
+  showToast('Logged out');
+}
+
+function showAdminDashboard() {
+  document.getElementById('adminLoginBox').style.display = 'none';
+  document.getElementById('adminDashboard').style.display = 'block';
+  document.getElementById('logoutBtn').style.display = 'block';
+  loadAdminData();
+}
+
+// ============================================
+// ADMIN TABS
+// ============================================
+function switchAdminTab(tab, btn) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('admin-' + tab).classList.add('active');
+}
+
+async function loadAdminData() {
+  await Promise.all([loadAdminVideos(), loadAdminClasses(), loadAdminDiet(), loadAdminSubs()]);
+}
+
+// ============================================
+// ADMIN: VIDEOS
+// ============================================
+async function loadAdminVideos() {
+  const { data } = await db.from('videos').select('*').order('created_at', { ascending: false });
+  const list = document.getElementById('adminVideoList');
+  list.innerHTML = (data||[]).map(v => `
+    <div class="admin-item">
+      <div>
+        <div class="admin-item-title">${v.emoji} ${v.title}</div>
+        <div class="admin-item-meta">${v.playlist} · ${v.platform} · ${v.duration||'—'}</div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-sm btn-delete" onclick="deleteVideo('${v.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('') || '<p style="font-size:0.82rem;color:var(--muted)">No videos yet.</p>';
+}
+
+async function addVideo(btn) {
+  const title = document.getElementById('newVidTitle').value.trim();
+  if (!title) { showToast('Please enter a title', 'error'); return; }
+  const playlist = document.getElementById('newVidPlaylist').value;
+  const emojis = { Yoga:'🧘', Nutrition:'🥗', 'Live Classes':'📺', Vlogs:'📝' };
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> Adding...';
+
+  const { error } = await db.from('videos').insert({
+    title, playlist,
+    platform: document.getElementById('newVidPlatform').value,
+    duration: document.getElementById('newVidDur').value || null,
+    url: document.getElementById('newVidUrl').value || null,
+    emoji: emojis[playlist] || '🎥'
+  });
+
+  btn.disabled = false;
+  btn.textContent = '+ Add Video';
+
+  if (error) { showToast('Error: ' + error.message, 'error'); return; }
+  ['newVidTitle','newVidDur','newVidUrl'].forEach(id => document.getElementById(id).value = '');
+  showToast('✅ Video added!');
+  await loadVideos();
+  await loadAdminVideos();
+}
+
+async function deleteVideo(id) {
+  if (!confirm('Delete this video?')) return;
+  await db.from('videos').delete().eq('id', id);
+  showToast('Video removed');
+  await loadVideos();
+  await loadAdminVideos();
+}
+
+// ============================================
+// ADMIN: CLASSES
+// ============================================
+async function loadAdminClasses() {
+  const { data } = await db.from('classes').select('*').order('created_at');
+  const list = document.getElementById('adminClassList');
+  list.innerHTML = (data||[]).map(c => `
+    <div class="admin-item">
+      <div>
+        <div class="admin-item-title">${c.name}</div>
+        <div class="admin-item-meta">${c.day} · ${c.time} · ${c.type}</div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-sm btn-delete" onclick="deleteClass('${c.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('') || '<p style="font-size:0.82rem;color:var(--muted)">No classes yet.</p>';
+}
+
+async function addClass(btn) {
+  const name = document.getElementById('newClassName').value.trim();
+  if (!name) { showToast('Please enter a class name', 'error'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="loading"></span> Adding...';
+
+  const { error } = await db.from('classes').insert({
+    name, day: document.getElementById('newClassDay').value,
+    time: document.getElementById('newClassTime').value || 'TBD',
+    type: document.getElementById('newClassType').value
+  });
+
+  btn.disabled = false; btn.textContent = '+ Add Class';
+  if (error) { showToast('Error: ' + error.message, 'error'); return; }
+  document.getElementById('newClassName').value = '';
+  document.getElementById('newClassTime').value = '';
+  showToast('✅ Class added!');
+  await loadClasses();
+  await loadAdminClasses();
+}
+
+async function deleteClass(id) {
+  if (!confirm('Delete this class?')) return;
+  await db.from('classes').delete().eq('id', id);
+  showToast('Class removed');
+  await loadClasses();
+  await loadAdminClasses();
+}
+
+// ============================================
+// ADMIN: DIET PLANS
+// ============================================
+async function loadAdminDiet() {
+  const { data } = await db.from('diet_plans').select('*').order('created_at');
+  const list = document.getElementById('adminDietList');
+  list.innerHTML = (data||[]).map(d => `
+    <div class="admin-item">
+      <div>
+        <div class="admin-item-title">${d.emoji} ${d.name}</div>
+        <div class="admin-item-meta">₹${d.price} · ${(d.features||'').split(',').length} features</div>
+      </div>
+      <div class="admin-actions">
+        <button class="btn-sm btn-delete" onclick="deleteDiet('${d.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('') || '<p style="font-size:0.82rem;color:var(--muted)">No plans yet.</p>';
+}
+
+async function addDietPlan(btn) {
+  const name = document.getElementById('newDietName').value.trim();
+  const price = document.getElementById('newDietPrice').value;
+  if (!name || !price) { showToast('Please fill name and price', 'error'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="loading"></span> Adding...';
+
+  const { error } = await db.from('diet_plans').insert({
+    name, price,
+    description: document.getElementById('newDietDesc').value || null,
+    features: document.getElementById('newDietFeatures').value || null,
+    emoji: '🌿'
+  });
+
+  btn.disabled = false; btn.textContent = '+ Add Plan';
+  if (error) { showToast('Error: ' + error.message, 'error'); return; }
+  ['newDietName','newDietPrice','newDietDesc','newDietFeatures'].forEach(id => document.getElementById(id).value = '');
+  showToast('✅ Diet plan added!');
+  await loadDietPlans();
+  await loadAdminDiet();
+}
+
+async function deleteDiet(id) {
+  if (!confirm('Delete this diet plan?')) return;
+  await db.from('diet_plans').delete().eq('id', id);
+  showToast('Plan removed');
+  await loadDietPlans();
+  await loadAdminDiet();
+}
+
+// ============================================
+// ADMIN: SUBSCRIBERS
+// ============================================
+async function loadAdminSubs() {
+  const [{ data: subs }, { data: dreqs }] = await Promise.all([
+    db.from('subscribers').select('*').order('created_at', { ascending: false }),
+    db.from('diet_requests').select('*').order('created_at', { ascending: false })
+  ]);
+
+  document.getElementById('subTableBody').innerHTML = (subs||[]).map(s => `
+    <tr>
+      <td>${s.name||'—'}</td>
+      <td>${s.email}</td>
+      <td>${s.type}</td>
+      <td>${s.goal||'—'}</td>
+      <td>${new Date(s.created_at).toLocaleDateString('en-IN')}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" style="text-align:center;padding:1rem">No subscribers yet.</td></tr>';
+
+  document.getElementById('dietReqTableBody').innerHTML = (dreqs||[]).map(r => `
+    <tr>
+      <td>${r.name}</td>
+      <td>${r.email}</td>
+      <td>${r.plan_name||'—'}</td>
+      <td>${r.goal||'—'}</td>
+      <td>${new Date(r.created_at).toLocaleDateString('en-IN')}</td>
+    </tr>
+  `).join('') || '<tr><td colspan="5" style="text-align:center;padding:1rem">No requests yet.</td></tr>';
+}
+
+// ============================================
+// INIT
+// ============================================
+async function init() {
+  await Promise.all([loadVideos(), loadClasses(), loadDietPlans(), loadStats()]);
+}
+
+init();
+</script>
+</body>
+</html>
